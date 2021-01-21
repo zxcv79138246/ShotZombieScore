@@ -15,14 +15,14 @@
         >
           {{ team.name }}
         </div>
-        <div class="team-score" :value="team.score">
+        <div class="team-score" :value="team.score" v-show="isTotalShow">
           {{ team.score | currency }}
         </div>
         <transition-group class="member-block" name="flip-list-inside">
           <div class="member" v-for="member in team.members" :key="member.id">
             <div class="avatar">
               <img
-                :src="member.avatar ? member.avatar : config.avatar"
+                :src="member.picture ? member.picture : config.avatar"
                 alt=""
               />
             </div>
@@ -36,6 +36,14 @@
         </transition-group>
       </div>
     </transition-group>
+    <div class="btn-box">
+      <div class="button" @click="handlePlay">
+        {{ isPlay ? '暫停' : '播放' }}
+      </div>
+      <div class="button" @click="handleTotalShow">
+        {{ isTotalShow ? '隱藏總分' : '顯示總分' }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -50,12 +58,29 @@ export default {
     return {
       teams: [],
       maxMemeberNum: 0,
+      isPlay: false,
+      isTotalShow: false,
+      interval: undefined,
     };
   },
   computed: {
     ...mapState(['config', 'botId']),
   },
   methods: {
+    handlePlay() {
+      this.isPlay = !this.isPlay;
+      if (this.isPlay) {
+        this.getGradesData();
+        this.interval = setInterval(() => {
+          this.getGradesData();
+        }, 3000);
+      } else {
+        clearInterval(this.interval);
+      }
+    },
+    handleTotalShow() {
+      this.isTotalShow = !this.isTotalShow;
+    },
     async init() {
       this.getGradesData();
     },
@@ -73,7 +98,7 @@ export default {
         return item.group;
       });
 
-      // let i = 0;
+      let i = 0;
 
       let lengthArray = [];
       for (let key in group) {
@@ -108,7 +133,7 @@ export default {
             (totalScore / teamMemberLength) * this.maxMemeberNum
           );
           this.teams[hasTeamIndex]['score'] = bonusScore;
-          teamMembers = _.sortBy(teamMembers, ['score']);
+          teamMembers = _.sortBy(teamMembers, ['score', 'id']);
           this.teams[hasTeamIndex]['members'] = teamMembers.reverse();
         } else {
           let totalScore = members.reduce((total, current) => {
@@ -118,7 +143,7 @@ export default {
           let bonusScore = Math.round(
             (totalScore / teamMemberLength) * this.maxMemeberNum
           );
-          members = _.sortBy(members, ['score']);
+          members = _.sortBy(members, ['score', 'id']);
           members = members.reverse();
           let teamLength = this.teams.length;
           this.teams.push({
@@ -129,20 +154,17 @@ export default {
           });
         }
 
-        // i++;
-        // if (i === 3) {
-        //   break;
-        // }
+        i++;
+        if (i === 6) {
+          break;
+        }
       }
-      this.teams = _.sortBy(this.teams, ['score']);
+      this.teams = _.sortBy(this.teams, ['score', 'name']);
       this.teams = this.teams.reverse();
     },
   },
   created() {
     this.init();
-    setInterval(() => {
-      this.getGradesData();
-    }, 3000);
   },
   filters: {
     currency(num) {
@@ -163,8 +185,23 @@ export default {
 </script>
 
 <style lang="scss">
+.btn-box {
+  position: absolute;
+  right: 50px;
+  bottom: 30px;
+  display: none;
+
+  .button {
+    margin: 0 7px;
+  }
+}
+.btn-box:hover {
+  display: block;
+}
+
 .top {
   display: flex;
+  justify-content: center;
   margin-bottom: 25px;
 
   .rank {
@@ -172,9 +209,10 @@ export default {
     display: flex;
     justify-content: center;
     margin: 0 15px;
+    max-width: 400px;
 
     img {
-      width: 40%;
+      width: 60%;
       max-width: 250px;
     }
   }
@@ -182,6 +220,7 @@ export default {
 .team-block {
   width: 100%;
   display: flex;
+  justify-content: center;
   margin: 0;
   padding: 0;
   list-style-type: none;
@@ -190,14 +229,15 @@ export default {
   padding-inline-start: 0;
 }
 .team {
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-content: center;
   background-color: rgba(255, 255, 255, 0.5);
   margin: 0 15px;
   padding: 15px 0 50px 0;
   border-radius: 15px;
+  max-width: 400px;
 
   .team-name {
     display: flex;
