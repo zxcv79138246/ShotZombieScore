@@ -1,7 +1,7 @@
 <template>
-  <div id="app" :style="{ backgroundImage: backgroundImg }">
+  <v-app id="app" :style="{ backgroundImage: backgroundImg }">
     <router-view />
-  </div>
+  </v-app>
 </template>
 
 <script>

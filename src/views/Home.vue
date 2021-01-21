@@ -37,12 +37,22 @@
       </div>
     </transition-group>
     <div class="btn-box">
-      <div class="button" @click="handlePlay">
+      <v-btn
+        class="button"
+        @click="handlePlay"
+        elevation="2"
+        :color="isPlay ? 'error' : 'primary'"
+      >
         {{ isPlay ? '暫停' : '播放' }}
-      </div>
-      <div class="button" @click="handleTotalShow">
+      </v-btn>
+      <v-btn
+        class="button"
+        @click="handleTotalShow"
+        elevation="2"
+        :color="isTotalShow ? 'secondary' : 'success'"
+      >
         {{ isTotalShow ? '隱藏總分' : '顯示總分' }}
-      </div>
+      </v-btn>
     </div>
   </div>
 </template>
@@ -185,18 +195,28 @@ export default {
 </script>
 
 <style lang="scss">
+.v-application--wrap {
+  min-height: 0;
+}
 .btn-box {
   position: absolute;
-  right: 50px;
-  bottom: 30px;
-  display: none;
+  right: -30px;
+  bottom: -30px;
+  display: flex;
+  width: 187px;
+  height: 36px;
+  background-color: transparent;
 
   .button {
     margin: 0 7px;
+    display: none;
   }
 }
+
 .btn-box:hover {
-  display: block;
+  .button {
+    display: block;
+  }
 }
 
 .top {

@@ -30,7 +30,9 @@
     "node-sass": "^4.12.0",
     "sass": "^1.32.5",
     "sass-loader": "^8.0.2",
+    "vue-cli-plugin-vuetify": "~2.0.9",
     "vue-s3-pusher": "git+https://git@github.com/KemingChen/vue-s3-pusher.git",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "vuetify-loader": "^1.3.0"
   }
 }
