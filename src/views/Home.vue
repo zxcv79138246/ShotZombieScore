@@ -68,7 +68,7 @@ export default {
     return {
       teams: [],
       maxMemeberNum: 0,
-      isPlay: false,
+      isPlay: true,
       isTotalShow: false,
       interval: undefined,
     };
@@ -93,6 +93,9 @@ export default {
     },
     async init() {
       this.getGradesData();
+      this.interval = setInterval(() => {
+        this.getGradesData();
+      }, 3000);
     },
     formatToCurrency(num) {
       const parts = num.toString().split('.');
@@ -107,9 +110,6 @@ export default {
       let group = _.groupBy(gradesData, (item) => {
         return item.group;
       });
-
-      let i = 0;
-
       let lengthArray = [];
       for (let key in group) {
         let length = group[key].length;
@@ -162,11 +162,6 @@ export default {
             members: members,
             score: bonusScore,
           });
-        }
-
-        i++;
-        if (i === 6) {
-          break;
         }
       }
       this.teams = _.sortBy(this.teams, ['score', 'name']);
